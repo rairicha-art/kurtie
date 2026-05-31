@@ -1,0 +1,63 @@
+# Wrangler configuration for deploying KURTIE to Cloudflare Workers.
+#
+# This project uses TanStack Start with the Nitro Cloudflare preset (configured
+# via @lovable.dev/vite-tanstack-config). After `bun run build`, the Worker
+# bundle is emitted to `dist/server/` and static assets to `dist/client/`.
+#
+# Deploy:
+#   bun run build
+#   bunx wrangler deploy
+#
+# Local preview against the built worker:
+#   bunx wrangler dev
+
+name = "kurtie"
+main = "dist/server/index.mjs"
+compatibility_date = "2025-05-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Serve the prerendered/static client assets from the Worker.
+[assets]
+directory = "dist/client"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+
+# Observability — view logs in the Cloudflare dashboard.
+[observability]
+enabled = true
+
+# ---------------------------------------------------------------------------
+# Runtime environment variables
+#
+# Set SECRET values with:  bunx wrangler secret put <NAME>
+#   - SUPABASE_URL
+#   - SUPABASE_PUBLISHABLE_KEY
+#   - SUPABASE_SERVICE_ROLE_KEY
+#   - LOVABLE_API_KEY        (only if using Lovable AI Gateway)
+#
+# Non-secret build-time vars (VITE_*) are baked in at `bun run build` time
+# from your local .env — make sure VITE_SUPABASE_URL,
+# VITE_SUPABASE_PUBLISHABLE_KEY and VITE_SUPABASE_PROJECT_ID are set before
+# building.
+# ---------------------------------------------------------------------------
+
+# [vars]
+# PUBLIC_SITE_NAME = "KURTIE"
+
+# ---------------------------------------------------------------------------
+# Optional: custom domain routing. Uncomment and adjust once your zone is
+# added to Cloudflare.
+# ---------------------------------------------------------------------------
+# routes = [
+#   { pattern = "kurtie.com", custom_domain = true },
+#   { pattern = "www.kurtie.com", custom_domain = true },
+# ]
+
+# ---------------------------------------------------------------------------
+# Environments (optional). Use:  bunx wrangler deploy --env production
+# ---------------------------------------------------------------------------
+[env.production]
+name = "kurtie"
+
+[env.staging]
+name = "kurtie-staging"
